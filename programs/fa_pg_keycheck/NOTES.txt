@@ -1,0 +1,15 @@
+
+
+$Id: NOTES.txt,v 1.1 2009-02-14 09:19:51 karl Exp $
+
+Notes on adding a primary key to a table that doesn't have one.
+
+Or, at least, a unique not-null key.
+
+create sequence regions_sequence;
+alter table regions add column id integer;
+update regions set id = nextval('regions_sequence');
+alter table regions alter column id set not null;
+create unique index regions_id_pkey on regions (id);
+
+
