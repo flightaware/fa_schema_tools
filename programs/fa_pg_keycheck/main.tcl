@@ -4,10 +4,19 @@
 # components of the index are not null, and all tables that do not have
 # a unique, nonnull index.
 #
-# $Id: main.tcl,v 1.1 2009-02-14 09:04:39 karl Exp $
+# $Id: main.tcl,v 1.2 2009-02-14 16:59:26 karl Exp $
 #
 namespace eval ::db {source asdidata.tcl}
 
+source genindex.tcl
+
+set pkeyTables [list]
+set ukeyTables [list]
+
+#
+# unique_check - given a table and an index name, see if the index is comprised
+#  only of fields that are marked not null
+#
 proc unique_check {table element} {
     upvar ::db::${table}::indices indices
     upvar ::db::${table}::fields fields
@@ -35,17 +44,27 @@ proc unique_check {table element} {
     puts ""
 }
 
+#
+# do_table - given a table, look to see if the table has a primary key or,
+#  if not, if it has a unique non-null key, recording that in either case.
+#
+#  if it has neither, emit SQL to add one
+#
 proc do_table {table} {
+    global pkeyTables ukeyTables
+
     upvar ::db::${table}::indices indices
     upvar ::db::${table}::fields fields
 
     foreach element $indices {
 	upvar ::db::${table}::indices::${element} index
 	if {$index(indisprimary)} {
-	    puts "$table PRIMARY KEY $element"
+	    puts "-- $table PRIMARY KEY $element"
+	    lappend pkeyTables $table
 	    return
 	} elseif {$index(indisunique)} {
-	    puts "$table UNIQUE KEY $element"
+	    puts "-- $table UNIQUE KEY $element"
+	    lappend ukeyTables [list $table $element]
 	    unique_check $table $element
 	    #parray index
 	    return
@@ -54,19 +73,21 @@ proc do_table {table} {
 	}
     }
 
-    puts "$table NO USABLE KEY"
+    puts "-- $table NO USABLE KEY"
+    set newColumnName [gen_column_name $fields]
+    puts "-- new column name: $newColumnName"
 
-if 0 {
-    foreach element $fields {
-	puts "    FIELD $element"
-	upvar ::db::${table}::fields::${element} fields
-	parray fields
-	puts ""
-    }
+    set newIndexName [gen_index_name $table $newColumnName]
+    puts "-- new index name: $newIndexName"
+
+    set newSequenceName [gen_sequence_name $table $newColumnName]
+    puts "-- new sequence name: $newSequenceName"
+
+    puts [gen_index $table $newSequenceName $newColumnName $newIndexName ]
+    puts ""
+    lappend ukeyTables [list $table $newColumnName]
+
 }
-
-}
-
 
 proc run {} {
     global tables
