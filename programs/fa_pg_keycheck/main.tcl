@@ -4,7 +4,7 @@
 # components of the index are not null, and all tables that do not have
 # a unique, nonnull index.
 #
-# $Id: main.tcl,v 1.2 2009-02-14 16:59:26 karl Exp $
+# $Id: main.tcl,v 1.3 2009-02-14 17:21:44 karl Exp $
 #
 namespace eval ::db {source asdidata.tcl}
 
@@ -32,7 +32,7 @@ proc unique_check {table element} {
 	upvar ::db::${table}::fields::${indexedField} field
 	#puts "Unique Check Field $indexedField"
 	if {!$field(attnotnull)} {
-	    puts "field $indexedField allows NULL, CAN'T USE IT"
+	    puts "-- field $indexedField allows NULL, CAN'T USE IT"
 	    puts ""
 	    return
 	}
@@ -40,8 +40,27 @@ proc unique_check {table element} {
 	#puts ""
     }
 
-    puts "ACCEPTED key $element for table $table"
+    puts "-- ACCEPTED key $element for table $table"
     puts ""
+}
+
+#
+# default_sequence_check - see if table contains a field that has a default
+#  derived from a sequence.  if so, return that field name, if not, return
+#  an empty string.
+#
+proc default_sequence_check {table} {
+    upvar ::db::${table}::indices indices
+    upvar ::db::${table}::fields fields
+
+    foreach fieldName $fields {
+	upvar ::db::${table}::fields::${fieldName} field
+	if {[string first "nextval" $field(default)] >= 0} {
+	    return $fieldName
+	}
+    }
+
+    return ""
 }
 
 #
@@ -73,6 +92,13 @@ proc do_table {table} {
 	}
     }
 
+    set candidate [default_sequence_check $table]
+    if {$candidate != ""} {
+	puts "-- $table's $candidate field needs an index!"
+	puts "create unique index [gen_index_name $table $candidate] on $table ($candidate);"
+	return
+    }
+
     puts "-- $table NO USABLE KEY"
     set newColumnName [gen_column_name $fields]
     puts "-- new column name: $newColumnName"
@@ -91,6 +117,10 @@ proc do_table {table} {
 
 proc run {} {
     global tables
+
+    puts "-- MACHINE GENERATED ON [clock format [clock seconds]] DO NOT EDIT"
+    puts "--"
+    puts "--"
 
     foreach table $::db::tables {
 	do_table $table
