@@ -4,8 +4,12 @@
 # components of the index are not null, and all tables that do not have
 # a unique, nonnull index.
 #
-# $Id: main.tcl,v 1.5 2009-02-15 07:02:25 karl Exp $
+# $Id: main.tcl,v 1.6 2009-02-15 07:30:05 karl Exp $
 #
+
+if {[info exists ::launchdir]} {
+    cd $::launchdir
+}
 
 source genindex.tcl
 source slony_syntax.tcl
