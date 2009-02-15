@@ -4,11 +4,12 @@
 # components of the index are not null, and all tables that do not have
 # a unique, nonnull index.
 #
-# $Id: main.tcl,v 1.3 2009-02-14 17:21:44 karl Exp $
+# $Id: main.tcl,v 1.4 2009-02-15 06:44:45 karl Exp $
 #
 namespace eval ::db {source asdidata.tcl}
 
 source genindex.tcl
+source slony_syntax.tcl
 
 set pkeyTables [list]
 set ukeyTables [list]
@@ -16,6 +17,8 @@ set ukeyTables [list]
 #
 # unique_check - given a table and an index name, see if the index is comprised
 #  only of fields that are marked not null
+#
+# returns 1 if the key can be used, 0 if it can't
 #
 proc unique_check {table element} {
     upvar ::db::${table}::indices indices
@@ -34,7 +37,7 @@ proc unique_check {table element} {
 	if {!$field(attnotnull)} {
 	    puts "-- field $indexedField allows NULL, CAN'T USE IT"
 	    puts ""
-	    return
+	    return 0
 	}
 	#parray field
 	#puts ""
@@ -42,6 +45,7 @@ proc unique_check {table element} {
 
     puts "-- ACCEPTED key $element for table $table"
     puts ""
+    return 1
 }
 
 #
@@ -82,16 +86,21 @@ proc do_table {table} {
 	    lappend pkeyTables $table
 	    return
 	} elseif {$index(indisunique)} {
-	    puts "-- $table UNIQUE KEY $element"
-	    lappend ukeyTables [list $table $element]
-	    unique_check $table $element
-	    #parray index
-	    return
+	    # if all component fields are not null, we can use this
+	    # and we're done
+	    if {[unique_check $table $element]} {
+		puts "-- $table UNIQUE KEY $element"
+		lappend ukeyTables [list $table $element]
+		return
+	    }
 	} else {
 	    continue
 	}
     }
 
+    #
+    # fell through -- we need to make an index
+    #
     set candidate [default_sequence_check $table]
     if {$candidate != ""} {
 	puts "-- $table's $candidate field needs an index!"
@@ -128,5 +137,12 @@ proc run {} {
     }
 }
 
-run
+proc doit {{argv ""}} {
+   run
+   puts [gen_slony_pkey_ukey $::pkeyTables $::ukeyTables]
+}
+
+if {!$tcl_interactive} {
+    doit $argv
+}
 
