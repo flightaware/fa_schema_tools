@@ -4,9 +4,8 @@
 # components of the index are not null, and all tables that do not have
 # a unique, nonnull index.
 #
-# $Id: main.tcl,v 1.4 2009-02-15 06:44:45 karl Exp $
+# $Id: main.tcl,v 1.5 2009-02-15 07:02:25 karl Exp $
 #
-namespace eval ::db {source asdidata.tcl}
 
 source genindex.tcl
 source slony_syntax.tcl
@@ -138,8 +137,10 @@ proc run {} {
 }
 
 proc doit {{argv ""}} {
-   run
-   puts [gen_slony_pkey_ukey $::pkeyTables $::ukeyTables]
+    set tclCode [eval exec fa_schema_to_tcl $argv]
+    namespace eval ::db $tclCode
+    run
+    puts [gen_slony_pkey_ukey $::pkeyTables $::ukeyTables]
 }
 
 if {!$tcl_interactive} {
