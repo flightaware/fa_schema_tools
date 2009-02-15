@@ -4,7 +4,7 @@
 # components of the index are not null, and all tables that do not have
 # a unique, nonnull index.
 #
-# $Id: main.tcl,v 1.6 2009-02-15 07:30:05 karl Exp $
+# $Id: main.tcl,v 1.7 2009-02-15 18:58:14 karl Exp $
 #
 
 if {[info exists ::launchdir]} {
@@ -38,16 +38,14 @@ proc unique_check {table element} {
 	upvar ::db::${table}::fields::${indexedField} field
 	#puts "Unique Check Field $indexedField"
 	if {!$field(attnotnull)} {
-	    puts "-- field $indexedField allows NULL, CAN'T USE IT"
-	    puts ""
+	    #puts "-- $table field $indexedField allows null, can't use it"
+	    #puts ""
 	    return 0
 	}
-	#parray field
-	#puts ""
     }
 
-    puts "-- ACCEPTED key $element for table $table"
-    puts ""
+    #puts "-- ACCEPTED key $element for table $table"
+    #puts ""
     return 1
 }
 
@@ -85,14 +83,14 @@ proc do_table {table} {
     foreach element $indices {
 	upvar ::db::${table}::indices::${element} index
 	if {$index(indisprimary)} {
-	    puts "-- $table PRIMARY KEY $element"
+	    puts "-- $table OK (primary key '$element')"
 	    lappend pkeyTables $table
 	    return
 	} elseif {$index(indisunique)} {
 	    # if all component fields are not null, we can use this
 	    # and we're done
 	    if {[unique_check $table $element]} {
-		puts "-- $table UNIQUE KEY $element"
+		puts "-- $table OK (unique key '$element')"
 		lappend ukeyTables [list $table $element]
 		return
 	    }
@@ -106,20 +104,21 @@ proc do_table {table} {
     #
     set candidate [default_sequence_check $table]
     if {$candidate != ""} {
-	puts "-- $table's $candidate field needs an index!"
+	puts "-- $table, give field '$candidate' a unique index"
 	puts "create unique index [gen_index_name $table $candidate] on $table ($candidate);"
 	return
     }
 
-    puts "-- $table NO USABLE KEY"
     set newColumnName [gen_column_name $fields]
-    puts "-- new column name: $newColumnName"
+    #puts "-- $table new column $newColumnName"
 
     set newIndexName [gen_index_name $table $newColumnName]
-    puts "-- new index name: $newIndexName"
+    #puts "-- $table new index $newIndexName"
 
     set newSequenceName [gen_sequence_name $table $newColumnName]
-    puts "-- new sequence name: $newSequenceName"
+    #puts "-- $table new sequence $newSequenceName"
+
+    puts "-- $table create new column '$newColumnName'"
 
     puts [gen_index $table $newSequenceName $newColumnName $newIndexName ]
     puts ""
