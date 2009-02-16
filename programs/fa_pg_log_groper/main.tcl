@@ -2,15 +2,18 @@
 #
 #
 #
-# $Id: main.tcl,v 1.3 2009-02-16 08:02:04 karl Exp $
+# $Id: main.tcl,v 1.4 2009-02-16 08:12:36 karl Exp $
 #
 
 package require Tclx
 #catch {parray foo}
 #cmdtrace on
 
-set sequence 0
+if {[info exists ::launchdir]} {
+    cd $::launchdir
+}
 
+set sequence 0
 
 set logPattern {^(...............) ([^ ]*) ([^[]*)\[([^\]]*)]: (.*)}
 
@@ -75,16 +78,17 @@ proc scan_for_completes {} {
 
 
 proc run {} {
-    set fp [open /var/log/postgres.log]
+    set logfp [open "|tail -f /var/log/postgres.log"]
+    #set logfp [open /var/log/postgres.log]
 
-    while {[gets $fp line] >= 0} {
+    while {[gets $logfp line] >= 0} {
 	unset -nocomplain array
 	#puts $line
 	crack_line $line array
 	assemble array
     }
 
-    close $fp
+    close $logfp
 }
 
 proc doit {{argv ""}} {
