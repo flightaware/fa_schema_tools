@@ -4,7 +4,7 @@
 # components of the index are not null, and all tables that do not have
 # a unique, nonnull index.
 #
-# $Id: main.tcl,v 1.7 2009-02-15 18:58:14 karl Exp $
+# $Id: main.tcl,v 1.8 2009-02-17 18:03:34 karl Exp $
 #
 
 if {[info exists ::launchdir]} {
@@ -143,7 +143,10 @@ proc doit {{argv ""}} {
     set tclCode [eval exec fa_schema_to_tcl $argv]
     namespace eval ::db $tclCode
     run
+
     puts [gen_slony_pkey_ukey $::pkeyTables $::ukeyTables]
+
+    puts [gen_slony_sequences $::db::sequences]
 }
 
 if {!$tcl_interactive} {
