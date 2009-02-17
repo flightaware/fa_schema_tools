@@ -2,7 +2,7 @@
 #
 #
 #
-# $Id: main.tcl,v 1.4 2009-02-16 08:12:36 karl Exp $
+# $Id: main.tcl,v 1.5 2009-02-17 03:36:02 karl Exp $
 #
 
 package require Tclx
@@ -64,19 +64,50 @@ proc assemble {arrayName} {
     scan_for_completes
 }
 
+#
+# emit - emit the line unless there are patterns and it doesn't match
+#
+proc emit {key value} {
+    global patterns
+
+    if {[llength $patterns]} {
+	set matched 0
+	foreach pattern $patterns {
+	    if {[regexp $pattern $value]} {
+		set matched 1
+		break
+	    }
+	}
+
+	if {!$matched} {
+	    return
+	}
+    }
+
+    puts "$key,$value"
+    puts ""
+}
+
+#
+# scan_for_completes - look at the sequences currently being assembled
+#  and if any are more than some amount "older" (based on sequence
+#  number that we increment when we see the first line of a group
+#  of lines), emit
+#
 proc scan_for_completes {} {
     global collector sequences sequence
 
     foreach element [array names sequences] {
 	if {$sequences($element) + 10 < $sequence} {
-	    puts "$element,$collector($element)"
-	    puts ""
+	    emit $element $collector($element)
 	    unset sequences($element) collector($element)
 	}
     }
 }
 
-
+#
+# run - start tailing the postgres log file
+#
 proc run {} {
     set logfp [open "|tail -f /var/log/postgres.log"]
     #set logfp [open /var/log/postgres.log]
@@ -92,6 +123,14 @@ proc run {} {
 }
 
 proc doit {{argv ""}} {
+    global patterns
+
+    if {$argv == ""} {
+	set patterns ""
+    } else {
+	set patterns $argv
+    }
+
     run
 }
 
