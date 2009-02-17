@@ -4,14 +4,16 @@
 # namespaces and arrays representing tables and fields and indexes within
 # tables
 #
-# $Id: main.tcl,v 1.1 2009-02-14 16:07:52 karl Exp $
+# $Id: main.tcl,v 1.2 2009-02-17 17:55:50 karl Exp $
 #
 
 package require pggrok
 
 proc load_database_metadata {db} {
     set tables [::pggrok::tables $db]
-    puts "set tables [list $tables]"
+    puts "set tables [list [lsort $tables]]"
+    puts ""
+    puts "set sequences [list [lsort [::pggrok::sequences $db]]]"
     puts ""
 
     foreach table $tables {

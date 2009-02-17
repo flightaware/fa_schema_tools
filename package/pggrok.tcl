@@ -8,15 +8,13 @@
 
 package require Pgtcl
 
-package provide pggrok 1.0
-
 namespace eval ::pggrok {
 
 #
 # tables -- return a list of the names of all the tables in the database
 #
 proc tables {conn} {
-    set result ""
+    set result [list]
     pg_execute -array data $conn {
 	select c.relname as name from pg_catalog.pg_class c 
 	left join pg_catalog.pg_user u on u.usesysid = c.relowner
@@ -36,7 +34,7 @@ proc tables {conn} {
 # schema -- return a list of the names of all the schema in the database
 #
 proc schema {conn} {
-    set result ""
+    set result [list]
     pg_execute -array data $conn {
 	SELECT c.relname as name
 	FROM pg_catalog.pg_class c
@@ -54,10 +52,36 @@ proc schema {conn} {
 }
 
 #
+# sequences -- return a list of the names of all the sequences in the database
+#
+proc sequences {conn} {
+    set result [list]
+    pg_execute -array data $conn {
+        SELECT n.nspname as "schema", c.relname as "name"
+        FROM pg_catalog.pg_class c
+             JOIN pg_catalog.pg_roles r ON r.oid = c.relowner
+             LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+        WHERE c.relkind IN ('S','')
+          AND n.nspname <> 'pg_catalog'
+          AND n.nspname !~ '^pg_toast'
+          AND pg_catalog.pg_table_is_visible(c.oid)
+        ORDER BY 1,2;
+    } {
+        if {$data(schema) == "public"} {
+	    lappend result $data(name)
+        } else {
+	    lappend result $data(schema).$data(name)
+	}
+    }
+
+    return $result
+}
+
+#
 # users -- return a list of the names of all the users in the database
 #
 proc users {conn} {
-    set result ""
+    set result [list]
     pg_execute -array data $conn {
 	SELECT u.usename AS name
 	FROM pg_catalog.pg_user u
@@ -73,7 +97,7 @@ proc users {conn} {
 # views -- return a list of the names of all the views in the datbase
 #
 proc views {conn} {
-    set result ""
+    set result [list]
     pg_execute -array data $conn {
 	SELECT c.relname as "name"
 	FROM pg_catalog.pg_class c
@@ -101,7 +125,7 @@ proc table_to_oid {conn table} {
 	    WHERE pg_catalog.pg_table_is_visible(c.oid) 
 	    AND c.relname ~ '^%s$'
     }
-    set result ""
+    set result [list]
     pg_execute -array data $conn [format $cmd $table] {
 	lappend result $data(oid)
     }
@@ -181,5 +205,7 @@ proc dump {conn} {
     puts ""
 }
 
-}
+}; # namespace pggrok
+
+package provide pggrok 1.0
 

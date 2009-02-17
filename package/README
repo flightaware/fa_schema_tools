@@ -1,5 +1,5 @@
 
-$Id: README,v 1.1 2009-02-14 15:55:29 karl Exp $
+$Id: README,v 1.2 2009-02-17 17:55:50 karl Exp $
 
 based on 
 
@@ -28,6 +28,15 @@ pggrok package:
 ::pggrok::schema $conn
 
     Return a list of the names of all the schema in the database
+
+::pggrok::sequences $conn
+
+    Return a list of all the sequences in the database.  If the schema
+    is public, just the name is given.  
+
+    If it's other than public, the schema is concatenated with a period.  
+    For instance, for the bd_ident_id_seq in the bigboy namespace, the 
+    result will be bigboy.bd_ident_id_seq.
 
 ::pggrok::users $conn
 
