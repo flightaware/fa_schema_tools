@@ -2,8 +2,12 @@
 #
 #
 #
-# $Id: main.tcl,v 1.5 2009-02-17 03:36:02 karl Exp $
+# $Id: main.tcl,v 1.6 2009-02-18 00:34:10 karl Exp $
 #
+
+# the number of messages we assemble simultaneously, after the nth message
+# is received, the first one is output, etc.
+set queueSize 10
 
 package require Tclx
 #catch {parray foo}
@@ -98,7 +102,7 @@ proc scan_for_completes {} {
     global collector sequences sequence
 
     foreach element [array names sequences] {
-	if {$sequences($element) + 10 < $sequence} {
+	if {$sequences($element) + $::queueSize < $sequence} {
 	    emit $element $collector($element)
 	    unset sequences($element) collector($element)
 	}
@@ -106,20 +110,49 @@ proc scan_for_completes {} {
 }
 
 #
+# line_available
+#
+proc line_available {logfp} {
+    if {[eof $logfp]} {
+	eof_exit
+    }
+
+    if {[gets $logfp line] >= 0} {
+	#puts $line
+	crack_line $line array
+	assemble array
+    }
+}
+
+#
+# one_second_interval - get called every second and increment the sequence
+#  to force output when not much stuff is coming in
+#
+proc one_second_interval {} {
+    global sequence
+
+    after 1000 one_second_interval
+
+    incr sequence
+    scan_for_completes
+}
+
+#
+# eof_exit
+#
+proc eof_exit {} {
+    set ::die 1
+}
+
+
+#
 # run - start tailing the postgres log file
 #
 proc run {} {
     set logfp [open "|tail -f /var/log/postgres.log"]
     #set logfp [open /var/log/postgres.log]
-
-    while {[gets $logfp line] >= 0} {
-	unset -nocomplain array
-	#puts $line
-	crack_line $line array
-	assemble array
-    }
-
-    close $logfp
+    fconfigure $logfp -blocking 0
+    fileevent $logfp readable "line_available $logfp"
 }
 
 proc doit {{argv ""}} {
@@ -132,6 +165,9 @@ proc doit {{argv ""}} {
     }
 
     run
+
+    vwait die
+    exit 0
 }
 
 if !$tcl_interactive {
