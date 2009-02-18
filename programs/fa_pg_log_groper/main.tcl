@@ -2,7 +2,7 @@
 #
 #
 #
-# $Id: main.tcl,v 1.6 2009-02-18 00:34:10 karl Exp $
+# $Id: main.tcl,v 1.7 2009-02-18 00:37:31 karl Exp $
 #
 
 # the number of messages we assemble simultaneously, after the nth message
@@ -153,6 +153,8 @@ proc run {} {
     #set logfp [open /var/log/postgres.log]
     fconfigure $logfp -blocking 0
     fileevent $logfp readable "line_available $logfp"
+
+    one_second_interval
 }
 
 proc doit {{argv ""}} {
