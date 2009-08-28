@@ -1,16 +1,18 @@
 #
+# FLightAware fa_schema_tools Makefile
+#
 # "make" to generate the pkgIndex.tcl file
 #
 # "make install" to copy all the stuff into a dir where Tcl can find it
 #
-# $Id: Makefile,v 1.1 2009-02-14 15:55:29 karl Exp $
-#
 
-TARGETDIR=/usr/local/lib/fa_schema_tools
+INSTALLBASE=/usr/local/lib
+INSTALLDIR=$(INSTALLBASE)/fa_schema_tools
+TCLSH=tclsh8.4
 
 all:
-	echo "pkg_mkIndex -direct -verbose . *.tcl"  | tclsh8.4
+	echo "pkg_mkIndex -direct -verbose . *.tcl"  | $(TCLSH)
 
 install:	all
-	mkdir -p $(TARGETDIR)
-	cp -R *.tcl $(TARGETDIR)
+	mkdir -p $(INSTALLDIR)
+	cp -R *.tcl $(INSTALLDIR)

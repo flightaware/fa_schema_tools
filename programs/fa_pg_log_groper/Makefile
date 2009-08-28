@@ -1,8 +1,6 @@
 #
 # fa_schma_tools Makefile for tclluancher program fa_pg_log_groper
 #
-# $Id: Makefile,v 1.1 2009-02-16 08:12:36 karl Exp $
-#
 
 LIB=/usr/local/lib
 BIN=/usr/local/bin

@@ -1,7 +1,4 @@
 
-
-$Id: TODO.txt,v 1.1 2009-02-14 17:03:25 karl Exp $
-
 If we don't find a primary key or a unique non-null key, before creating one,
 check to see if any fields have a default value that looks something like
 

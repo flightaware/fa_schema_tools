@@ -4,9 +4,8 @@
 # components of the index are not null, and all tables that do not have
 # a unique, nonnull index.
 #
-# $Id: main.tcl,v 1.8 2009-02-17 18:03:34 karl Exp $
-#
 
+# tcllauncher launchdir check
 if {[info exists ::launchdir]} {
     cd $::launchdir
 }
@@ -123,9 +122,11 @@ proc do_table {table} {
     puts [gen_index $table $newSequenceName $newColumnName $newIndexName ]
     puts ""
     lappend ukeyTables [list $table $newColumnName]
-
 }
 
+#
+# run - generate the intrepretable results of all the table definitions
+#
 proc run {} {
     global tables
 
@@ -139,6 +140,9 @@ proc run {} {
     }
 }
 
+#
+# doit - main program
+#
 proc doit {{argv ""}} {
     set tclCode [eval exec fa_schema_to_tcl $argv]
     namespace eval ::db $tclCode

@@ -1,7 +1,4 @@
 
-
-$Id: NOTES.txt,v 1.1 2009-02-14 09:19:51 karl Exp $
-
 Notes on adding a primary key to a table that doesn't have one.
 
 Or, at least, a unique not-null key.

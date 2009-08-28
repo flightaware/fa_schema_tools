@@ -1,10 +1,8 @@
 #
-# program to dump info about tables and indices for a database, into a format
+# Program to dump info about tables and indices for a database, into a format
 # that can be sourced back into tcl and will create a nested hierachy of
 # namespaces and arrays representing tables and fields and indexes within
 # tables
-#
-# $Id: main.tcl,v 1.3 2009-02-17 18:01:46 karl Exp $
 #
 
 package require pggrok

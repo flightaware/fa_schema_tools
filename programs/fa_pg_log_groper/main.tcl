@@ -1,8 +1,6 @@
 #
-#
-#
-#
-# $Id: main.tcl,v 1.7 2009-02-18 00:37:31 karl Exp $
+# fa_pg_log_groper - this will grep postgresql potentially multi-line messages
+# out of the syslog and assemble them back into single lines
 #
 
 # the number of messages we assemble simultaneously, after the nth message

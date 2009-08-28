@@ -2,8 +2,6 @@
 # gen_index - routine to create SQL to alter a table to add and populate
 #  a unique, nonnull index for a table
 #
-# $Id: genindex.tcl,v 1.1 2009-02-14 16:59:26 karl Exp $
-#
 
 #
 # gen_index - given a table name, new sequence name, new column name, and

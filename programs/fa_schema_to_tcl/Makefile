@@ -1,7 +1,5 @@
 #
-# fa_schma_tools Makefile for tclluancher program fa_schema_to_tcl
-#
-# $Id: Makefile,v 1.1 2009-02-14 16:07:52 karl Exp $
+# fa_schma_tools Makefile for tcllauncher program fa_schema_to_tcl
 #
 
 LIB=/usr/local/lib

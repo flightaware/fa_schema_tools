@@ -1,8 +1,6 @@
 #
 # flightaware slony prep stuff - generate partial slony config
 #
-# $Id: slony_syntax.tcl,v 1.2 2009-02-17 18:03:34 karl Exp $
-#
 
 package require Tclx; # for lassign
 
