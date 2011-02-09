@@ -61,6 +61,11 @@ proc assemble {arrayName} {
 
     set id $array(pid)-$array(pgMajorID)
     set sequences($id) $sequence
+
+    if {![info exists collector($id)]} {
+	set collector($id) "$array(date) $id "
+    }
+
     append collector($id) "$array(pgFragment) "
 
     scan_for_completes
@@ -86,7 +91,8 @@ proc emit {key value} {
 	}
     }
 
-    puts "$key,$value"
+    #puts "$key,$value"
+    puts $value
     puts ""
 }
 
