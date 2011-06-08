@@ -8,7 +8,7 @@
 
 INSTALLBASE=/usr/local/lib
 INSTALLDIR=$(INSTALLBASE)/fa_schema_tools
-TCLSH=tclsh8.4
+TCLSH=tclsh8.5
 
 all:
 	echo "pkg_mkIndex -direct -verbose . *.tcl"  | $(TCLSH)

@@ -12,10 +12,10 @@ is maintained.
 
 programs:
 
-tclsh8.4 dump.tcl oldDbString >olddb.out
-tclsh8.4 dump.tcl newDbString >newdb.out
+tclsh8.5 dump.tcl oldDbString >olddb.out
+tclsh8.5 dump.tcl newDbString >newdb.out
 
-tclsh8.4 compare.tcl olddb.out newdb.out
+tclsh8.5 compare.tcl olddb.out newdb.out
 
 pggrok package:
 

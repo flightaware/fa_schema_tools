@@ -4,7 +4,7 @@
 
 LIB=/usr/local/lib
 BIN=/usr/local/bin
-TCLSH=tclsh8.4
+TCLSH=tclsh8.5
 
 SERVER_INSTALLFILES= main.tcl genindex.tcl slony_syntax.tcl
 
