@@ -79,6 +79,14 @@ proc do_table {table} {
     upvar ::db::${table}::indices indices
     upvar ::db::${table}::fields fields
 
+    if {[string match temp* $table]} {
+        return
+    }
+
+    if {[string match test* $table]} {
+        return
+    }
+
     foreach element $indices {
 	upvar ::db::${table}::indices::${element} index
 	if {$index(indisprimary)} {
@@ -141,9 +149,9 @@ proc run {} {
 }
 
 #
-# doit - main program
+# main - main program
 #
-proc doit {{argv ""}} {
+proc main {{argv ""}} {
     set tclCode [eval exec fa_schema_to_tcl $argv]
     namespace eval ::db $tclCode
     run
@@ -154,6 +162,6 @@ proc doit {{argv ""}} {
 }
 
 if {!$tcl_interactive} {
-    doit $argv
+    main $argv
 }
 
