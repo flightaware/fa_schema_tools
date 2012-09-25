@@ -61,7 +61,7 @@ proc usage {} {
     exit 1
 }
 
-proc doit {argv} {
+proc main {argv} {
     if {$argv == ""} usage
     set db [pg_connect -connlist $argv]
     load_database_metadata $db
@@ -71,4 +71,4 @@ proc doit {argv} {
 #package require Tclx
 #cmdtrace on
 
-if !$tcl_interactive {doit $argv}
+if !$tcl_interactive {main $argv}
