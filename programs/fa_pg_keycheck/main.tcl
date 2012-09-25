@@ -79,6 +79,14 @@ proc do_table {table} {
     upvar ::db::${table}::indices indices
     upvar ::db::${table}::fields fields
 
+    if {[string match temp* $table]} {
+        return
+    }
+
+    if {[string match test* $table]} {
+        return
+    }
+
     foreach element $indices {
 	upvar ::db::${table}::indices::${element} index
 	if {$index(indisprimary)} {
