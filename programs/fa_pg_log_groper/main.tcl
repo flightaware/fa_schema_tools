@@ -161,7 +161,7 @@ proc run {} {
     one_second_interval
 }
 
-proc doit {{argv ""}} {
+proc main {{argv ""}} {
     global patterns
 
     if {$argv == ""} {
@@ -177,5 +177,5 @@ proc doit {{argv ""}} {
 }
 
 if !$tcl_interactive {
-    doit $argv
+    main $argv
 }
