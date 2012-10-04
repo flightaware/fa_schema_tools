@@ -138,7 +138,7 @@ proc table_to_oid {conn table} {
 # specified array name with elements containing data about each
 # field in turn, executing the code body on the result
 #
-proc table_attributes {conn table arrayName codeBody} {
+proc table_attributes_pre92 {conn table arrayName codeBody} {
     upvar $arrayName data
     set oid [table_to_oid $conn $table]
 
@@ -156,6 +156,38 @@ proc table_attributes {conn table arrayName codeBody} {
     pg_execute -array data $conn [format $cmd $oid] {
 	set data(default) $data(?column?)
 	unset data(?column?)
+	uplevel $codeBody
+    }
+}
+
+#
+# table_attributes -- given a connection and a table name, fill the
+# specified array name with elements containing data about each
+# field in turn, executing the code body on the result
+#
+proc table_attributes {conn table arrayName codeBody} {
+    upvar $arrayName data
+    set oid [table_to_oid $conn $table]
+
+    set cmd {
+	SELECT a.attname,
+	  pg_catalog.format_type(a.atttypid, a.atttypmod),
+	  (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128)
+	   FROM pg_catalog.pg_attrdef d
+	   WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef),
+	  a.attnotnull, a.attnum,
+	  (SELECT c.collname FROM pg_catalog.pg_collation c, pg_catalog.pg_type t
+	   WHERE c.oid = a.attcollation AND t.oid = a.atttypid AND a.attcollation <> t.typcollation) AS attcollation,
+	  NULL AS indexdef,
+	  NULL AS attfdwoptions
+	FROM pg_catalog.pg_attribute a
+	WHERE a.attrelid = '%s' AND a.attnum > 0 AND NOT a.attisdropped
+	ORDER BY a.attnum
+    }
+
+    pg_execute -array data $conn [format $cmd $oid] {
+	set data(default) $data(substring)
+	unset data(substring)
 	uplevel $codeBody
     }
 }
