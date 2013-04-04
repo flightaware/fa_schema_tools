@@ -1,5 +1,5 @@
 #
-# fa_schma_tools Makefile for tcllauncher program fa_schema_to_tcl
+# fa_schema_tools Makefile for tcllauncher program fa_pg_schema_compare
 #
 
 LIB=/usr/local/lib
@@ -8,7 +8,7 @@ TCLSH=tclsh8.5
 
 SERVER_INSTALLFILES= main.tcl
 
-PROGNAME=fa_schema_to_tcl
+PROGNAME=fa_pg_schema_compare
 
 all:
 	@echo "'make install' to install $(PROGNAME)"
