@@ -153,7 +153,7 @@ proc eof_exit {} {
 # run - start tailing the postgres log file
 #
 proc run {} {
-    set logfp [open "|tail -f /var/log/postgres.log"]
+    set logfp [open "|tail -F /var/log/postgres.log"]
     #set logfp [open /var/log/postgres.log]
     fconfigure $logfp -blocking 0
     fileevent $logfp readable "line_available $logfp"
