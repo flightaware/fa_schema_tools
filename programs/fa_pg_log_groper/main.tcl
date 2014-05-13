@@ -154,7 +154,6 @@ proc eof_exit {} {
 #
 # run - start tailing the postgres log file
 #
-<<<<<<< HEAD
 proc run {{file ""}} {
     if {$file == ""} {
 	set logfp [open "|tail -F /var/log/postgres.log"]
