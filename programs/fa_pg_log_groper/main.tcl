@@ -8,6 +8,8 @@
 set queueSize 10
 
 package require Tclx
+package require cmdline
+
 #catch {parray foo}
 #cmdtrace on
 
@@ -152,8 +154,12 @@ proc eof_exit {} {
 #
 # run - start tailing the postgres log file
 #
-proc run {} {
-    set logfp [open "|tail -f /var/log/postgres.log"]
+proc run {{file ""}} {
+    if {$file == ""} {
+	set logfp [open "|tail -f /var/log/postgres.log"]
+    } else {
+	set logfp [open $file]
+    }
     #set logfp [open /var/log/postgres.log]
     fconfigure $logfp -blocking 0
     fileevent $logfp readable "line_available $logfp"
@@ -164,13 +170,29 @@ proc run {} {
 proc main {{argv ""}} {
     global patterns
 
+    set options {
+	{file "" "specify a file to read rather than tailing postgresql.log"}
+    }
+
+    set usage ": $::argv0 ?options? ?pattern? ?pattern...?"
+
+    if {[catch {array set ::params [::cmdline::getKnownOptions argv $options $usage]} catchResult] == 1} {
+	puts stderr $catchResult
+	exit 1
+    }
+
     if {$argv == ""} {
 	set patterns ""
     } else {
 	set patterns $argv
     }
 
-    run
+    if {![info exists ::params(file)]} {
+	run
+    } else {
+	run $::params(file)
+    }
+
 
     vwait die
     exit 0
