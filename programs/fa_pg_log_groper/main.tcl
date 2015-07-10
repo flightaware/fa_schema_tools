@@ -171,7 +171,7 @@ proc main {{argv ""}} {
     global patterns
 
     set options {
-	{file "" "specify a file to read rather than tailing postgresql.log"}
+	{file.arg "" "specify a file to read rather than tailing postgresql.log"}
     }
 
     set usage ": $::argv0 ?options? ?pattern? ?pattern...?"
@@ -201,3 +201,5 @@ proc main {{argv ""}} {
 if !$tcl_interactive {
     main $argv
 }
+
+# vim: set ts=8 sw=4 sts=4 noet :
