@@ -4,7 +4,7 @@
 
 LIB=/usr/local/lib
 BIN=/usr/local/bin
-TCLSH=tclsh8.5
+TCLSH=tclsh
 
 SERVER_INSTALLFILES= main.tcl
 
