@@ -35,6 +35,13 @@ proc unique_check {table element} {
 	set indexedField [string trim $indexedField]
 
 	upvar ::db::${table}::fields::${indexedField} field
+
+	if {[array size field] == 0} {
+		    puts "-- $table field $indexedField -- can't make sense of index, skipping"
+		    puts ""
+		    return 0
+	}
+
 	#puts "Unique Check Field $indexedField"
 	if {!$field(attnotnull)} {
 	    #puts "-- $table field $indexedField allows null, can't use it"
@@ -152,7 +159,7 @@ proc run {} {
 # main - main program
 #
 proc main {{argv ""}} {
-    set tclCode [eval exec fa_schema_to_tcl $argv]
+    set tclCode [eval exec fa_pg_schema_to_tcl $argv]
     namespace eval ::db $tclCode
     run
 

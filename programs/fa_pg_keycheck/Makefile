@@ -1,5 +1,5 @@
 #
-# fa_schma_tools Makefile for tcllauncher program fa_schema_to_tcl
+# fa_schema_tools Makefile for tcllauncher program fa_pg_schema_to_tcl
 #
 
 LIB=/usr/local/lib
