@@ -48,7 +48,21 @@ fa_pg_keycheck is a Tcl program that will grope through a PostgreSQL database, l
 
 All of those tables can be fed straight to slony.
 
-Tables that don't have a primary key or non-null unique key need to have one added.
+Tables that don't have a primary key or non-null unique key need to have one added.  fa_pg_keycheck will emit the DDL necessary to create a unique key and index; for instance for a table called monkey that has no qualifying index, it will emit
+
+```sql
+-- monkey create new column 'id'
+begin;
+  create sequence monkey_id_seq;
+  alter table monkey add column id integer;
+  update monkey set id = nextval('monkey_id_seq');
+  alter table monkey alter column id set not null;
+  create unique index monkey_id_key on monkey (id);
+end;
+```
+
+Finally, fa_pg_keycheck will emit configuration data for all the database tables that can be pasted into slony, including tables that have a primary key, tables that do not have a primary key but have a unique key along with the qualifying key name, and a list of all the sequences to be replicated.
+
 
 fa_pg_log_groper
 ---
