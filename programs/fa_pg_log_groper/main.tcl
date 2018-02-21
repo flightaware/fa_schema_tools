@@ -13,10 +13,6 @@ package require cmdline
 #catch {parray foo}
 #cmdtrace on
 
-if {[info exists ::launchdir]} {
-    cd $::launchdir
-}
-
 set sequence 0
 
 set logPattern {^(...............) ([^ ]*) ([^[]*)\[([^\]]*)]: (.*)}
